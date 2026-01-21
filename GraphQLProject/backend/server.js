@@ -1,18 +1,6 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-
-
-// let todos = [
-//   { id: "1", title: "Learn GraphQL", completed: true },
-//   { id: "2", title: "Build API", completed: true },
-// ];
-
-
-
-let todos = [
-  { id: "", title: "", completed: true },
-  
-];
+let todos = [{ id: "1", title: "Learn GraphQL", completed: false }];
 
 const typeDefs = gql`
   type Todo {
@@ -32,8 +20,6 @@ const typeDefs = gql`
     deleteTodo(id: ID!): Boolean!
   }
 `;
-
-
 
 const resolvers = {
   Query: {
@@ -71,8 +57,6 @@ const resolvers = {
     },
   },
 };
-
-
 
 const server = new ApolloServer({ typeDefs, resolvers });
 

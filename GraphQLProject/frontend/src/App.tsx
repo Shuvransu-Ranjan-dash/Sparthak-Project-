@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   ApolloClient,
   InMemoryCache,
@@ -6,20 +6,15 @@ import {
   useQuery,
   useMutation,
   gql,
-} from '@apollo/client';
+} from "@apollo/client";
 
-/* =========================
-   Apollo Client Setup
-========================= */
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: "http://localhost:4000/graphql",
   cache: new InMemoryCache(),
 });
 
-/* =========================
-   GraphQL Queries & Mutations
-========================= */
+
 
 const GET_TODOS = gql`
   query {
@@ -42,9 +37,10 @@ const ADD_TODO = gql`
 `;
 
 const UPDATE_TODO = gql`
-  mutation ($id: ID!, $completed: Boolean!) {
-    updateTodo(id: $id, completed: $completed) {
+  mutation ($id: ID!, $title: String, $completed: Boolean) {
+    updateTodo(id: $id, title: $title, completed: $completed) {
       id
+      title
       completed
     }
   }
@@ -56,9 +52,6 @@ const DELETE_TODO = gql`
   }
 `;
 
-/* =========================
-   Todo App Component
-========================= */
 
 const TodoApp: React.FC = () => {
   const { loading, error, data } = useQuery(GET_TODOS);
@@ -67,7 +60,9 @@ const TodoApp: React.FC = () => {
   const [updateTodo] = useMutation(UPDATE_TODO);
   const [deleteTodo] = useMutation(DELETE_TODO);
 
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
 
   const handleAdd = async () => {
     if (!title.trim()) return;
@@ -77,7 +72,7 @@ const TodoApp: React.FC = () => {
       refetchQueries: [{ query: GET_TODOS }],
     });
 
-    setTitle('');
+    setTitle("");
   };
 
   const handleToggle = async (id: string, completed: boolean) => {
@@ -85,6 +80,18 @@ const TodoApp: React.FC = () => {
       variables: { id, completed: !completed },
       refetchQueries: [{ query: GET_TODOS }],
     });
+  };
+
+  const handleUpdateTitle = async (id: string) => {
+    if (!editTitle.trim()) return;
+
+    await updateTodo({
+      variables: { id, title: editTitle },
+      refetchQueries: [{ query: GET_TODOS }],
+    });
+
+    setEditId(null);
+    setEditTitle("");
   };
 
   const handleDelete = async (id: string) => {
@@ -98,8 +105,8 @@ const TodoApp: React.FC = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>📝 GraphQL Todo App</h1>
+    <div style={{ padding: "20px" }}>
+      <h1> GraphQL Todo App</h1>
 
       <input
         value={title}
@@ -110,28 +117,53 @@ const TodoApp: React.FC = () => {
 
       <ul>
         {data.todos.map((todo: any) => (
-          <li key={todo.id} style={{ marginBottom: '8px' }}>
-            <span
-              style={{
-                textDecoration: todo.completed ? 'line-through' : 'none',
-              }}
-            >
-              {todo.title}
-            </span>
+          <li key={todo.id} style={{ marginBottom: "10px" }}>
+            {editId === todo.id ? (
+              <>
+                <input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                />
+                <button onClick={() => handleUpdateTitle(todo.id)}>
+                  Save
+                </button>
+                <button onClick={() => setEditId(null)}>Cancel</button>
+              </>
+            ) : (
+              <>
+                <span
+                  style={{
+                    textDecoration: todo.completed ? "line-through" : "none",
+                  }}
+                >
+                  {todo.title}
+                </span>
 
-            <button
-              style={{ marginLeft: '10px' }}
-              onClick={() => handleToggle(todo.id, todo.completed)}
-            >
-              {todo.completed ? 'Undo' : 'Done'}
-            </button>
+                <button
+                  style={{ marginLeft: "10px" }}
+                  onClick={() => handleToggle(todo.id, todo.completed)}
+                >
+                  {todo.completed ? "Undo" : "Done"}
+                </button>
 
-            <button
-              style={{ marginLeft: '5px', color: 'red' }}
-              onClick={() => handleDelete(todo.id)}
-            >
-              Delete
-            </button>
+                <button
+                  style={{ marginLeft: "5px" }}
+                  onClick={() => {
+                    setEditId(todo.id);
+                    setEditTitle(todo.title);
+                  }}
+                >
+                  Update
+                </button>
+
+                <button
+                  style={{ marginLeft: "5px", color: "red" }}
+                  onClick={() => handleDelete(todo.id)}
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </li>
         ))}
       </ul>

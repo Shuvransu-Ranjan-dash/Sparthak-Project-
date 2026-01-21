@@ -1,0 +1,50 @@
+.input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.input-container input, .input-container select, .input-container button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.task-details {
+  flex: 1;
+  cursor: pointer;
+}
+
+.timer {
+  margin: 0 10px;
+}
+
+.timer button {
+  margin-left: 5px;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.priority-high { border-left: 5px solid red; }
+.priority-medium { border-left: 5px solid orange; }
+.priority-low { border-left: 5px solid green; }
+
+.overdue { background-color: #ffe6e6; }
+
+.tags { margin-left: 10px; }
+.tag {
+  background-color: #e0e0e0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8em;
+  margin-right: 5px;
+}
+
+.due-date { font-size: 0.9em; color: #666; }

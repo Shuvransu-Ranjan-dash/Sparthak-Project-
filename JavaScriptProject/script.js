@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li"); // Create a list item
       li.textContent = task.text; // Set the task text
       if (task.completed) {
-        li.classList.add("completed"); // Add CSS class if completed (assumes CSS exists)
+        li.classList.add("completed"); // Add CSS class if completed
       }
 
       // Click the task to toggle completion
